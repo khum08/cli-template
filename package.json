@@ -1,7 +1,7 @@
 {
   "name": "--libraryname--",
   "version": "0.0.0",
-  "description": "",
+  "description": "--description--",
   "keywords": [],
   "main": "dist/--libraryname--.umd.js",
   "module": "dist/--libraryname--.es5.js",

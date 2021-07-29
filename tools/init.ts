@@ -71,24 +71,6 @@ function libraryNameCreate() {
   setupLibrary()
 }
 
-/**
- * Sees if the users wants to accept the suggested library name if the project
- * has been cloned into a custom directory (i.e. it's not 'typescript-library-starter')
- */
-function libraryNameSuggestedAccept() {
-  _prompt.get(_promptSchemaLibrarySuggest, (err: any, res: any) => {
-    if (err) {
-      console.log(colors.red("Sorry, you'll need to type the library name"))
-      libraryNameCreate()
-    }
-
-    if (res.useSuggestedName.toLowerCase().charAt(0) === "y") {
-      setupLibrary(libraryNameSuggested())
-    } else {
-      libraryNameCreate()
-    }
-  })
-}
 
 /**
  * The library name is suggested by looking at the directory name of the
