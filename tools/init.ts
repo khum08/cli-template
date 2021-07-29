@@ -9,6 +9,17 @@ const path = require("path")
 const { readFileSync, writeFileSync } = require("fs")
 const { fork } = require("child_process")
 
+const config = {
+  name: '--o_name--',
+  version: '--o_version--',
+  description: '--o_description--',
+  author: '--o_author--',
+  license: '--o_license--',
+  language: '--o_language--'
+}
+
+
+
 // Note: These should all be relative to the project root directory
 const rmDirs = [
   ".git"
@@ -30,39 +41,7 @@ const renameFiles = [
   ["test/library.test.ts", "test/--libraryname--.test.ts"]
 ]
 
-const _promptSchemaLibraryName = {
-  properties: {
-    library: {
-      description: colors.cyan(
-        "What do you want the library to be called? (use kebab-case)"
-      ),
-      pattern: /^[a-z]+(\-[a-z]+)*$/,
-      type: "string",
-      required: true,
-      message:
-        '"kebab-case" uses lowercase letters, and hyphens for any punctuation'
-    }
-  }
-}
 
-const _promptSchemaLibrarySuggest = {
-  properties: {
-    useSuggestedName: {
-      description: colors.cyan(
-        'Would you like it to be called "' +
-          libraryNameSuggested() +
-          '"? [Yes/No]'
-      ),
-      pattern: /^(y(es)?|n(o)?)$/i,
-      type: "string",
-      required: true,
-      message: 'You need to type "Yes" or "No" to continue...'
-    }
-  }
-}
-
-_prompt.start()
-_prompt.message = ""
 
 // Clear console
 process.stdout.write('\x1B[2J\x1B[0f');
@@ -78,17 +57,9 @@ console.log(
   colors.cyan("Hi! You're almost ready to make the next great TypeScript library.")
 )
 
-// Generate the library name and start the tasks
-if (process.env.CI == null) {
-  if (!libraryNameSuggestedIsDefault()) {
-    libraryNameSuggestedAccept()
-  } else {
-    libraryNameCreate()
-  }
-} else {
-  // This is being run in a CI environment, so don't ask any questions
-  setupLibrary(libraryNameSuggested())
-}
+
+setupLibrary()
+
 
 
 
@@ -97,16 +68,7 @@ if (process.env.CI == null) {
  * default directory, or if they want a different name to the one suggested
  */
 function libraryNameCreate() {
-  _prompt.get(_promptSchemaLibraryName, (err: any, res: any) => {
-    if (err) {
-      console.log(colors.red("Sorry, there was an error building the workspace :("))
-      removeItems()
-      process.exit(1)
-      return
-    }
-
-    setupLibrary(res.library)
-  })
+  setupLibrary()
 }
 
 /**
@@ -163,7 +125,7 @@ function libraryNameSuggestedIsDefault() {
  * 
  * @param libraryName
  */
-function setupLibrary(libraryName: string) {
+function setupLibrary(libraryName: string = config.name) {
   console.log(
     colors.cyan(
       "\nThanks for the info. The last few changes are being made... hang tight!\n\n"
@@ -214,8 +176,9 @@ function modifyContents(libraryName: string, username: string, usermail: string)
   try {
     const changes = replace.sync({
       files,
-      from: [/--libraryname--/g, /--username--/g, /--usermail--/g],
-      to: [libraryName, username, usermail]
+      from: [/--libraryname--/g, /--username--/g, /--usermail--/g,
+        /--description--/g, /--version--/g, /--license--/g],
+      to: [libraryName, username, usermail, config.description, config.version, config.license]
     })
     console.log(colors.yellow(modifyFiles.join("\n")))
   } catch (error) {
